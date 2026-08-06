@@ -31,6 +31,41 @@
 ### 关联文件
 
 - `code/AGENTS.md`：Agent 工作偏好（用户指示，禁止修改）。
-- `summary_proj.md`：项目详细文档。
-- `project_design.md`：设计辅助文档（流程图 / ER 图）。
+- `docs/summary_proj.md`：项目总结文档（2026-08-07 起随 MkDocs 站点维护）。
+- `docs/project_design.md`：设计辅助文档（流程图 / ER 图）。
 - `requirements.txt`：重写后的依赖清单。
+
+## 2026-08-07 按新版 AGENTS.md 重构文档（MkDocs 化）
+
+### 背景
+
+用户更新了 `code/AGENTS.md`，新要求：文档统一存放在与 `code/` 同级的文件夹并使用 MkDocs 创建维护；`summary_proj.md` 聚焦文件职能、模块依赖、数据流向、算法选择与设计思想；类的构成、函数输入输出、变量类型改由 API 文档承载；py 代码必须使用 typehint 并为函数/类编写 docstring。
+
+### 本次改动
+
+1. **新建 MkDocs 站点骨架**
+   - 新增 `mkdocs.yml`（readthedocs 主题、中文、mkdocstrings 插件、`paths: [code]`）。
+   - 新增 `docs/index.md` 首页与 `docs/api/*.md`（data_process / data_processor / model_calibrator / pricing_verification / greeks_analysis 五个 API 参考页）。
+   - `docs/summary_proj.md`、`docs/project_design.md` 由项目根目录移入 `docs/`（git mv 保留历史）。
+   - 安装 mkdocstrings / mkdocstrings-python / pymdown-extensions（虚拟环境 data_process），`mkdocs build` 构建成功。
+
+2. **重写 `docs/summary_proj.md`**
+   - 按新 AGENTS.md 调整定位：每个文件的职能、模块依赖、数据流向、算法选择与设计思想；删除类/函数明细表（改由 API 文档承载）。
+   - 保留并更新数据文件格式、命名规范、环境说明等章节。
+
+3. **补齐 py 代码 docstring 与类型注解**
+   - data_process.py：函数类型注解与返回类型、`get_expiry` docstring；
+   - data_processor.py：类 docstring、`short_term_filter` 注解与 docstring；
+   - model_calibrator.py：dataclass/TypedDict/docstring、`calibrate` 参数注解、`_loss_function` 注解；
+   - pricing_verification.py：各定价器类与方法 docstring、`compare_pricing_on_date` 完整注解与 docstring、`BlackScholesPricer.price` 注解；
+   - greeks_analysis.py：TypedDict 与类 docstring、`update_spot` 注解。
+   - 均为文档性变更（无逻辑改动），`py_compile` 与 `mkdocs build` 均通过。
+
+4. **配套更新**
+   - `readme.md`：目录结构加入 `docs/` 与 `mkdocs.yml`，新增“文档”章节。
+   - 新增 `.gitignore`：忽略 `site/`、`__pycache__/`、`*.pyc`。
+
+### 待办 / 说明
+
+- `code/` 下若干 .py 与 `main.ipynb` 仍包含用户未提交的修改（含本次 docstring 补充）。按 AGENTS.md“逻辑代码改变需先通过 pytest 再推送”的要求，本次未将这些代码改动提交；`tests/` 目录尚未建立。
+- `site/` 为 mkdocs 构建产物，已加入 .gitignore。

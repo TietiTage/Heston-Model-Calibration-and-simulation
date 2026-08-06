@@ -1,0 +1,32 @@
+site_name: Heston 模型期权校准与模拟
+site_description: 基于 QuantLib 的 Heston 随机波动率模型——沪深300指数期权的每日校准、定价验证与希腊字母分析
+repo_url: https://github.com/TietiTage/Heston-Model-Calibration-and-simulation
+
+docs_dir: docs
+
+theme:
+  name: readthedocs
+  language: zh
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [code]
+          options:
+            show_source: false
+            show_signature_annotations: true
+            show_root_heading: true
+            docstring_style: numpy
+
+nav:
+  - 首页: index.md
+  - 项目总结: summary_proj.md
+  - 设计文档（流程图 / ER 图）: project_design.md
+  - API 参考:
+      - data_process.py: api/data_process.md
+      - data_processor.py: api/data_processor.md
+      - model_calibrator.py: api/model_calibrator.md
+      - pricing_verification.py: api/pricing_verification.md
+      - greeks_analysis.py: api/greeks_analysis.md

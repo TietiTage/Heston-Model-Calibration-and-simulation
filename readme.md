@@ -6,6 +6,10 @@
 
 ```text
 simulation/
+├── docs/                         # 文档（MkDocs 站点源）
+│   ├── summary_proj.md           # 项目总结（文件职能/依赖/数据流/设计思想）
+│   ├── project_design.md         # 设计辅助文档（流程图 / ER 图）
+│   └── api/                      # API 参考（docstring 自动生成）
 ├── data/                         # 原始数据
 │   ├── io_options_processed.csv
 │   ├── 沪深300_股息率_市值加权_3年_20260408_024105.csv
@@ -18,8 +22,9 @@ simulation/
 │    ├── model_calibrator.py           # Heston 模型参数校准
 │    ├── pricing_verification.py       # 定价验证（半解析 + MC + BS）
 │    ├── greeks_analysis.py            # 希腊字母计算与动态分析
-│    ├── main.ipynb               # 主运行 notebook
-│    └── requirements.txt
+│    └── main.ipynb               # 主运行 notebook
+├── mkdocs.yml                    # MkDocs 配置
+├── requirements.txt              # 运行时依赖
 └── README.md
 ```
 
@@ -28,6 +33,20 @@ simulation/
 ```bash
 pip install -r requirements.txt
 ```
+
+## 文档
+
+文档统一存放于 `docs/` 目录，使用 MkDocs 创建和维护：
+
+```bash
+pip install mkdocs mkdocstrings mkdocstrings-python
+mkdocs serve     # 本地预览
+mkdocs build     # 静态构建到 site/
+```
+
+- `docs/summary_proj.md`：项目总结（每个文件的职能、模块依赖、数据流向、算法选择与设计思想）。
+- `docs/project_design.md`：流程图、数据流图与 ER 图。
+- `docs/api/`：API 参考，由各模块 docstring 经 mkdocstrings 自动生成。
 
 ## 数据准备
 
