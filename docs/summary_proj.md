@@ -3,7 +3,7 @@
 > 本文档由 Agent 依据 `code/AGENTS.md` 要求维护，UTF-8 编码。
 > 按新要求，本文件专注于：**每个文件的职能、模块依赖、数据流向、算法选择和设计思想**。
 > 类的构成、函数的输入输出和主要作用、变量的类型等细节，请查阅 [API 参考](api/data_processor.md)（由 docstring 经 MkDocs 自动生成）。
-> 流程图、数据流图与 ER 图等设计辅助文档见 [project_design.md](project_design.md)。
+> 流程图、数据流图等设计辅助文档见 [project_design.md](project_design.md)。
 
 ## 1. 项目概述
 
@@ -41,7 +41,7 @@ greeks_analysis.py 希腊字母计算与动态分析 → 论文图表
 | 文件 | 职能 |
 |---|---|
 | `summary_proj.md` | 项目总结：文件职能、模块依赖、数据流向、算法选择与设计思想 |
-| `project_design.md` | 设计辅助文档：流程图、数据流图、ER 图 |
+| `project_design.md` | 设计辅助文档：流程图、数据流图 |
 | `api/*.md` | API 参考：由 docstring 经 MkDocs（mkdocstrings）自动生成 |
 
 ### 2.3 数据与输出

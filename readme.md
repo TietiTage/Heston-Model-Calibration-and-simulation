@@ -8,7 +8,7 @@
 simulation/
 ├── docs/                         # 文档（MkDocs 站点源）
 │   ├── summary_proj.md           # 项目总结（文件职能/依赖/数据流/设计思想）
-│   ├── project_design.md         # 设计辅助文档（流程图 / ER 图）
+│   ├── project_design.md         # 设计辅助文档（流程图）
 │   └── api/                      # API 参考（docstring 自动生成）
 ├── data/                         # 原始数据
 │   ├── io_options_processed.csv
@@ -46,7 +46,7 @@ mkdocs build     # 静态构建到 site/
 ```
 
 - `docs/summary_proj.md`：项目总结（每个文件的职能、模块依赖、数据流向、算法选择与设计思想）。
-- `docs/project_design.md`：流程图、数据流图与 ER 图。
+- `docs/project_design.md`：流程图、数据流图。
 - `docs/api/`：API 参考，由各模块 docstring 经 mkdocstrings 自动生成。
 
 ## 测试

@@ -32,7 +32,7 @@
 
 - `code/AGENTS.md`：Agent 工作偏好（用户指示，禁止修改）。
 - `docs/summary_proj.md`：项目总结文档（2026-08-07 起随 MkDocs 站点维护）。
-- `docs/project_design.md`：设计辅助文档（流程图 / ER 图）。
+- `docs/project_design.md`：设计辅助文档（流程图）。
 - `requirements.txt`：重写后的依赖清单。
 
 ## 2026-08-07 按新版 AGENTS.md 重构文档（MkDocs 化）
@@ -90,3 +90,19 @@
 ### 待办 / 说明
 
 - `code/main.ipynb` 仍保留用户未提交的修改，本次未提交。
+
+## 2026-08-07 删除 ER 图并同步相关文档
+
+### 本次改动
+
+1. 用户删除 `docs/project_design.md` 中不必要的 ER 图章节（原第 2 节）。
+2. 同步更新引用 ER 图的文档：
+   - `docs/project_design.md`：标题与说明改为“设计辅助文档（流程图）”，移除随 ER 图遗留的“期权记录为核心实体”说明段；
+   - `mkdocs.yml`：导航标签改为“设计文档（流程图）”；
+   - `docs/index.md`：导航表与目录结构中的 ER 图字样去除；
+   - `docs/summary_proj.md`：文档头与文件职能表中的 ER 图字样去除；
+   - `readme.md`：目录结构与文档说明中的 ER 图字样去除。
+
+### 说明
+
+- 设计辅助文档现仅保留四张流程图（总体数据流、单日校准、定价验证、希腊字母分析）。

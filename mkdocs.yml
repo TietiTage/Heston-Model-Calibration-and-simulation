@@ -23,7 +23,7 @@ plugins:
 nav:
   - 首页: index.md
   - 项目总结: summary_proj.md
-  - 设计文档（流程图 / ER 图）: project_design.md
+  - 设计文档（流程图）: project_design.md
   - API 参考:
       - data_process.py: api/data_process.md
       - data_processor.py: api/data_processor.md

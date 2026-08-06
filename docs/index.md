@@ -7,7 +7,7 @@
 | 文档 | 内容 |
 |---|---|
 | [项目总结](summary_proj.md) | 每个文件的职能、模块依赖、数据流向、算法选择与设计思想 |
-| [设计文档（流程图 / ER 图）](project_design.md) | 总体数据流、单日校准、定价验证、希腊字母分析的流程图及数据实体关系 ER 图 |
+| [设计文档（流程图）](project_design.md) | 总体数据流、单日校准、定价验证、希腊字母分析的流程图 |
 | [API 参考](api/data_processor.md) | 类的构成、函数的输入输出与主要作用、变量的类型（由 docstring 经 MkDocs 自动生成） |
 
 ## 快速开始
@@ -29,7 +29,7 @@ mkdocs serve
 Heston-Model-Calibration-and-simulation/
 ├── docs/                     # 文档（MkDocs 站点源）
 │   ├── summary_proj.md       # 项目总结
-│   ├── project_design.md     # 设计辅助文档（流程图 / ER 图）
+│   ├── project_design.md     # 设计辅助文档（流程图）
 │   └── api/                  # API 参考（docstring 自动生成）
 ├── code/                     # 源代码
 ├── tests/                    # pytest 测试用例
