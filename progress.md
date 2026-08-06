@@ -127,3 +127,26 @@
 ### 说明
 
 - `site/` 为 mkdocs 构建产物（已 gitignore），首次使用请先运行 `start_docs.bat` 或 `mkdocs build`。
+
+## 2026-08-07 代码审查整改：提交工作区改动并清理仓库产物
+
+### 本次改动
+
+1. **提交此前未提交的工作区改动**
+   - `main.ipynb`：相对路径硬编码改用 `pathlib`；`PROJECT_ROOT` 兼容从仓库根目录或 `code/` 启动两种情况。
+   - 五个核心 py 文件 docstring 统一为 numpy 风格（`Parameters` / `Returns`）。
+   - `pytest` 36 用例全部通过。
+2. **修复 `index.html`**
+   - 恢复卡片浅色背景（此前误改为深色导致文字不可读）。
+   - 文档/API 链接从已 gitignore 的 `site/` 构建产物改为 `docs/` 源文件，GitHub 上可直接渲染。
+3. **停止跟踪运行产物（`git rm --cached`，本地文件保留）**
+   - `code/processor.pkl`、`code/calibration_options.csv`、`code/2025-04-01-pricing_comparison.csv`、`code/greeks_dynamics_C3900_20250620.csv`。
+   - `.gitignore` 新增 `code/*.csv`、`code/processor.pkl`、`.pytest_cache/`。
+4. **仓库卫生**
+   - 新增 `.gitattributes`（`text=auto`、notebook LF、图片/PDF 二进制）。
+   - `start_docs.bat`：优先使用 `data_process` 环境，缺失时回退到 PATH 中的 `python`。
+   - `readme.md`：注明输出文件由 notebook 生成且不入版本库。
+
+### 说明
+
+- `processor.pkl` 与生成 CSV 仅停止跟踪（本地文件保留），历史提交中的体积未做重写。

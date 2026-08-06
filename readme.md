@@ -106,6 +106,8 @@ pytest
 
 ### 输出文件
 
+> 以下文件由 `code/main.ipynb` 运行时生成，已加入 `.gitignore`，不入版本库。
+
 | 路径 | 列/内容 | 说明 |
 |---|---|---|
 | `output/calibrated_params_daily.csv` | date, v0, kappa, theta, sigma, rho, rmse, mae, status | 每日校准参数与误差 |
@@ -126,7 +128,7 @@ pytest
    - （可选）希腊字母动态分析；
    - 生成论文图表。
 
-3. 主要输出文件：
+3. 主要输出文件（由 notebook 运行时生成，已加入 `.gitignore`，不入库）：
    - `output/calibrated_params_daily.csv`：每日 Heston 参数及 RMSE/MAE。
    - `code/calibration_options.csv`：每日实际使用的期权子集。
    - `code/2025-04-01-pricing_comparison.csv`：以 2025 年 4 月 1 日为验证日期的三模型对比（可在 notebook 中设置）。

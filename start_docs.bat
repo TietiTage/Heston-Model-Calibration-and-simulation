@@ -4,18 +4,13 @@ rem  Unified local docs entry for Heston-Model-Calibration.
 rem  1) Build the MkDocs site (docs/ -> site/)
 rem  2) Open the unified entry page (index.html) in browser
 rem
-rem  If data_process env is not at the path below, edit PYTHON.
+rem  Prefers the data_process env; falls back to python on PATH.
 rem ============================================================
 setlocal
-set "PYTHON=E:\Anaconda\envs\data_process\python.exe"
+set "PYTHON=python"
+if exist "E:\Anaconda\envs\data_process\python.exe" set "PYTHON=E:\Anaconda\envs\data_process\python.exe"
 
-if not exist "%PYTHON%" (
-    echo [ERROR] data_process environment not found: %PYTHON%
-    echo Edit the PYTHON variable in start_docs.bat to point to your environment.
-    pause
-    exit /b 1
-)
-
+echo Using Python: %PYTHON%
 echo [1/2] Building MkDocs site ...
 "%PYTHON%" -m mkdocs build
 if errorlevel 1 (
