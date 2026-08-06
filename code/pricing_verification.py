@@ -4,6 +4,7 @@ import pandas as pd
 from model_calibrator import HestonParameterSet
 from typing import Union, Dict, Literal, Optional, List, Tuple
 from datetime import datetime
+from data_processor import HestonDataProcessor
 
 class HestonModelPricer:
     """
@@ -13,7 +14,8 @@ class HestonModelPricer:
                  params: HestonParameterSet, 
                  spot: float, 
                  risk_free_curve: ql.YieldTermStructureHandle, 
-                 dividend_curve: ql.YieldTermStructureHandle):
+                 dividend_curve: ql.YieldTermStructureHandle) -> None:
+        """初始化半解析 Heston 定价器。"""
         self.params: HestonParameterSet = params
         self.spot: float = spot
         self.risk_free_curve: ql.YieldTermStructureHandle = risk_free_curve
@@ -21,13 +23,14 @@ class HestonModelPricer:
 
     @staticmethod
     def _to_ql_date(value: Union[str, pd.Timestamp, ql.Date, datetime]) -> ql.Date:
+        """将字符串 / pandas 时间戳 / QuantLib 日期统一转换为 QuantLib Date。"""
         if isinstance(value, ql.Date):
             return value
         ts = pd.Timestamp(value)
         return ql.Date(ts.day, ts.month, ts.year)
 
     def _build_engine(self, eval_date:Union[str, pd.Timestamp, datetime, ql.Date]) -> ql.AnalyticHestonEngine:
-
+        """以给定评估日构建 Heston 模型的高精度半解析引擎（relTol=1e-7, maxEval=10000）。"""
         eval_date_ql: ql.Date = self._to_ql_date(eval_date)
         with ql.SavedSettings():
             process = ql.HestonProcess(
@@ -50,6 +53,7 @@ class HestonModelPricer:
               strike:float, 
               expiry_date:Union[str, pd.Timestamp, datetime, ql.Date], 
               eval_date:Union[str, pd.Timestamp, datetime, ql.Date]) -> float:
+        """返回指定欧式期权的 Heston 半解析价格。"""
         eval_d: ql.Date = self._to_ql_date(eval_date)
         with ql.SavedSettings():
             engine = self._build_engine(eval_date)
@@ -93,6 +97,7 @@ class HestonModelPricer:
 
 
 class HestonMonteCarloPricer:
+    """基于全截断 Euler 离散的 Heston 蒙特卡洛定价器，支持对偶变量。"""
     def __init__(self,
              params: HestonParameterSet,
              spot: float,
@@ -104,6 +109,7 @@ class HestonMonteCarloPricer:
              n_paths: int = int(1e7),
              antithetic: bool = True,
              seed: int = 42) -> None:
+        """初始化蒙特卡洛定价器：固定评估日、到期日、路径数与随机种子。"""
         
         self.params: HestonParameterSet = params
         self.spot = float(spot)
@@ -117,13 +123,15 @@ class HestonMonteCarloPricer:
         self.expiry = self._to_ql_date(expiry_date)
 
     @staticmethod
-    def _to_ql_date(value):
+    def _to_ql_date(value: Union[str, pd.Timestamp, ql.Date]) -> ql.Date:
+        """将字符串 / pandas 时间戳 / QuantLib 日期统一转换为 QuantLib Date。"""
         if isinstance(value, ql.Date):
             return value
         ts = pd.Timestamp(value)
         return ql.Date(ts.day, ts.month, ts.year)
 
-    def _build_engine(self):
+    def _build_engine(self) -> ql.MCEuropeanHestonEngine:
+        """构建全截断 Euler MC 引擎（PseudoRandom + 对偶变量 + requiredSamples）。"""
         # 直接使用传入的曲线句柄，不再自己构建 FlatForward
         r_ts = self.risk_free_ts
         q_ts = self.dividend_ts
@@ -155,7 +163,7 @@ class HestonMonteCarloPricer:
         return engine
 
 
-    def price(self, strike, option_type='C') -> float:
+    def price(self, strike: float, option_type: str = 'C') -> float:
         """
         返回 (价格)
         """
@@ -176,7 +184,7 @@ class HestonMonteCarloPricer:
         
     
 
-    def price_with_error(self, strike, option_type='C') -> Tuple[float,float]:
+    def price_with_error(self, strike: float, option_type: str = 'C') -> Tuple[float, float]:
         """
         返回 (价格, 蒙特卡洛标准误)
         标准误 = engine.errorEstimate()
@@ -200,7 +208,9 @@ class HestonMonteCarloPricer:
 class BlackScholesPricer:
     """Black-Scholes公式定价器"""
     @staticmethod
-    def price(spot, strike, r, q, T, sigma, option_type='C'):
+    def price(spot: float, strike: float, r: float, q: float, T: float,
+              sigma: float, option_type: str = 'C') -> float:
+        """BS 闭式定价：输入标的价格、行权价、无风险利率、股息率、期限与波动率；T<=0 或 sigma<=0 时返回内在价值。"""
         from scipy.stats import norm
 
         spot = float(spot)
@@ -225,8 +235,30 @@ class BlackScholesPricer:
         return float(price)
 
 
-def compare_pricing_on_date(eval_date, processor, calibrated_params: HestonParameterSet,
-                            calibration_csv='calibration_options.csv'):
+def compare_pricing_on_date(eval_date: Union[str, pd.Timestamp, datetime],
+                            processor: HestonDataProcessor,
+                            calibrated_params: HestonParameterSet,
+                            calibration_csv: str = 'calibration_options.csv') -> Optional[pd.DataFrame]:
+    """
+    对指定评估日进行多模型定价验证。
+
+    参数
+    ----------
+    eval_date : Union[str, pd.Timestamp, datetime]
+        评估日。
+    processor : HestonDataProcessor
+        已清洗数据的处理器，用于取当日期权与市场环境。
+    calibrated_params : HestonParameterSet
+        当日校准得到的 Heston 参数。
+    calibration_csv : str
+        校准期权 CSV 路径（保留参数，用于样本一致性说明）。
+
+    返回
+    ----------
+    Optional[pd.DataFrame]
+        列 = strike, type, T, market, BlackScholes, BS_const, Heston_analytic, Heston_MC；
+        当日无数据时返回 None。
+    """
     print(f"\n===== 定价验证 (基于保存的校准期权数据) =====")
     print(f"评估日: {eval_date}")
     print(f"校准参数: v0={calibrated_params.v0:.6f}, kappa={calibrated_params.kappa:.4f}, "

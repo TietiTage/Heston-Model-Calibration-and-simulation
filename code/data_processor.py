@@ -3,11 +3,43 @@ import numpy as np
 import QuantLib as ql
 from typing import Dict, Optional, Union, Literal
 from datetime import datetime
+
+
+def filter_calibration_options(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    统一的期权筛选函数。
+    校准（setup_calibration_helpers）、每日校准（run_daily_calibration）
+    与定价验证（get_calibration_data）共用同一套过滤条件。
+    """
+    # 极短到期日剔除
+    df = df[df['T'] >= 0.02].copy()
+
+    # 短期高流动性：接近平值的额外要求
+    def short_term_filter(row: pd.Series) -> bool:
+        """短期合约的流动性/虚实值约束：低流动性或深度虚值/实值合约剔除。"""
+        if row['T'] < 0.05:
+            if row.get('volume', 0) < 500 or abs(row.get('delta', 0)) > 0.65:
+                return False
+        return True
+
+    df = df[df.apply(short_term_filter, axis=1)]
+
+    # Delta 范围过滤 (0.1 ~ 0.9)
+    if 'delta' in df.columns:
+        df = df[(df['delta'].abs() >= 0.1) & (df['delta'].abs() <= 0.9)]
+
+    # 价格必须为正且有限
+    df = df[df['close'] > 0]
+    df = df[np.isfinite(df['close'])]
+    return df
+
+
 class HestonDataProcessor:
+    """数据中枢：加载并清洗期权数据，维护现货、股息率、利率等市场环境并计算 BS 隐含波动率。"""
     def __init__(self,
                  option_csv_path: str,
                  dividend_csv_path: str,
-                 rate_df: pd.DataFrame):
+                 rate_df: pd.DataFrame) -> None:
         """
         参数
         ----------
@@ -275,26 +307,5 @@ class HestonDataProcessor:
         if df is None or df.empty:
             return df
 
-        # 2. 应用与 setup_calibration_helpers 完全相同的过滤条件
-        # T >= 0.02（极短到期日剔除）
-        df = df[df['T'] >= 0.02].copy()
-
-        # 短期高流动性/接近平值的额外要求
-        def short_term_filter(row):
-            if row['T'] < 0.05:
-                if row.get('volume', 0) < 500 or abs(row.get('delta', 0)) > 0.65:
-                    return False
-            return True
-
-        df = df[df.apply(short_term_filter, axis=1)]
-
-        # Delta 范围过滤 (0.1 ~ 0.9)
-        if 'delta' in df.columns:
-            delta_mask = (df['delta'].abs() >= 0.1) & (df['delta'].abs() <= 0.9)
-            df = df[delta_mask]
-
-        # 价格必须为正且有限
-        df = df[df['close'] > 0]
-        df = df[np.isfinite(df['close'])]
-
-        return df
+        # 2. 应用统一的校准过滤条件（与 setup_calibration_helpers 完全一致）
+        return filter_calibration_options(df)

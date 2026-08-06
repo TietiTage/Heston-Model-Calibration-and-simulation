@@ -3,11 +3,16 @@ import glob
 import re
 import os
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Optional, Tuple
 
 import QuantLib as ql
 from datetime import datetime, timedelta
 
-def third_friday_of_month(year, month):
+# 项目根目录 = code/ 的上一级
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+def third_friday_of_month(year: int, month: int) -> datetime:
     """
     返回指定年月的IO期权到期日（第三个星期五），
     若当天为交易所假日则提前至前一个交易日。
@@ -27,7 +32,7 @@ def third_friday_of_month(year, month):
 
     # 3. 转回 datetime 返回
     return datetime(adjusted.year(), adjusted.month(), adjusted.dayOfMonth())
-def parse_contract(contract_code):
+def parse_contract(contract_code: str) -> Optional[Tuple[int, int, str, int]]:
     """解析合约代码，返回 (expiry_year, expiry_month, cp, strike)"""
     pattern = r'IO(\d{2})(\d{2})[-]?([CP])[-]?(\d+)'
     match = re.match(pattern, contract_code)
@@ -41,7 +46,7 @@ def parse_contract(contract_code):
     return year, mm, cp, strike
 
 
-def process_files(root_dir="../data"):
+def process_files(root_dir: Path = PROJECT_ROOT / "data") -> pd.DataFrame:
     """递归处理 root_dir 下所有 CSV 文件，提取IO期权数据，合并到一个DataFrame"""
     all_data = []
     pattern = os.path.join(root_dir, "**/*.csv")
@@ -83,7 +88,8 @@ def process_files(root_dir="../data"):
         io_df['strike'] = parsed.apply(lambda x: x[3] if x else None)
         io_df.dropna(inplace=True)
 
-        def get_expiry(row):
+        def get_expiry(row: pd.Series) -> datetime:
+            """由解析出的年份与月份计算该合约的到期日。"""
             return third_friday_of_month(int(row['expiry_year']), int(row['expiry_month']))
 
         io_df['expiry'] = io_df.apply(get_expiry, axis=1)
@@ -110,10 +116,10 @@ def process_files(root_dir="../data"):
 
 
 if __name__ == "__main__":
-    df = process_files(root_dir="../../data")
+    df = process_files(root_dir=PROJECT_ROOT / "data")
     if not df.empty:
         df.sort_values(['date', '合约代码'], inplace=True)
-        output_file = 'io_options_processed.csv'
+        output_file = PROJECT_ROOT / "data" / "io_options_processed.csv"
         df.to_csv(output_file, index=False, encoding='gbk')
         print(f"处理完成，共 {len(df)} 条记录，已保存至 {output_file}")
     else:

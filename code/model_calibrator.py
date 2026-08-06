@@ -3,11 +3,12 @@ import numpy as np
 from dataclasses import dataclass
 import pandas as pd
 from typing import List, Optional, Tuple, Union, Literal
-from data_processor import HestonDataProcessor
+from data_processor import HestonDataProcessor, filter_calibration_options
 from datetime import datetime
 
 @dataclass
 class HestonParameterSet:
+    """Heston 模型参数集合（与 QuantLib 内部参数顺序不同，使用前需映射）。"""
     v0: float
     kappa: float
     theta: float
@@ -17,6 +18,7 @@ class HestonParameterSet:
 from typing import TypedDict
 
 class OptionHelper(TypedDict):
+    """校准辅助对象：单期权的元数据与缓存好的 QuantLib 期权对象。"""
     T: float
     strike: float
     cp: Literal['C', 'P']  
@@ -86,7 +88,7 @@ class HestonModelCalibrator:
             atm_iv = df.loc[atm_idx, 'bs_iv']
             # atm_iv = df['bs_iv'].iat[atm_idx]
             if not pd.isna(atm_iv):
-                self.prior_v0_center = (max(atm_iv), 0.05) ** 2
+                self.prior_v0_center = max(atm_iv, 0.05) ** 2
         if self.prior_v0_center is None:
             self.prior_v0_center = self.prior_theta_center
 
@@ -126,6 +128,7 @@ class HestonModelCalibrator:
 
     @staticmethod
     def _to_ql_date(value:Union[str,ql.Date, pd.Timestamp]) -> ql.Date:
+        """将字符串 / QuantLib 日期 / pandas 时间戳统一转换为 QuantLib Date。"""
         if isinstance(value, ql.Date):
             return value
         ts = pd.Timestamp(value)
@@ -133,36 +136,21 @@ class HestonModelCalibrator:
 
     def setup_calibration_helpers(self) -> None:
         """
-        构建校准用的期权辅助对象列表。
+        构建校准用的期权辅助对象列表（先应用统一的校准过滤条件）。
         """
         self.helpers = []
         eval_date_ql = self._to_ql_date(self.eval_date)
         ql.Settings.instance().evaluationDate = eval_date_ql
 
-        for _, row in self.option_data.iterrows():
+        filtered_data = filter_calibration_options(self.option_data)
+
+        for _, row in filtered_data.iterrows():
             expiry = self._to_ql_date(row['expiry'])
             if expiry <= eval_date_ql:
                 continue
 
             T = float(row['T'])
-            # volume = int(row["volume"])
-            # delta = float(row["delta"])
-            # # 极短到期日，危险且数值不稳定
-            # if T < 0.02:
-            #     continue
-
-            # # 短期但仍有价值的区间：要求高流动性 + 接近平值
-            # if T < 0.05:
-            #     if volume < 500 or abs(delta) > 0.65:  # 放宽 delta 范围，保留平值附近
-            #         continue
-
             price = float(row['close'])
-            # if not np.isfinite(price) or price <= 0:
-            #     continue
-
-            # if 'delta' in row and pd.notna(row['delta']):
-            #     if abs(row['delta']) < 0.1 or abs(row['delta']) > 0.9:
-            #         continue
             cp_raw = str(row['cp']).upper().strip()
             assert cp_raw in ('C', 'P'), f"Invalid option type: {cp_raw}"
             cp: Literal['C', 'P'] = cp_raw
@@ -187,9 +175,10 @@ class HestonModelCalibrator:
         print()
         print(f"[DEBUG] 原始数据行数: {len(self.option_data)}, 筛选后 helpers: {len(self.helpers)}")
         if len(self.helpers) == 0:
-            print("警告: 没有期权通过筛选，请检查过滤条件（T>=0.05, delta范围, 价格>0, 到期日>评估日）")
+            print("警告: 没有期权通过筛选，请检查过滤条件（T>=0.02, 短期流动性, delta 0.1~0.9, 价格>0, 到期日>评估日）")
 
-    def _price_one_option(self, option_type: Literal["C","P"], strike, expiry_date) -> float:
+    def _price_one_option(self, option_type: Literal["C","P"], strike: float, expiry_date: ql.Date) -> float:
+        """使用当前引擎对单只欧式期权定价，非法价格返回 NaN。"""
         try:
             ql.Settings.instance().evaluationDate = self._to_ql_date(self.eval_date)
             payoff = ql.PlainVanillaPayoff(
@@ -207,8 +196,8 @@ class HestonModelCalibrator:
             return np.nan
         
 
-    def calibrate(self, initial_params: HestonParameterSet, aggressive=False,
-                seed_individual=None, prior_weight=0.5) -> Tuple[HestonParameterSet, ql.HestonModel]:
+    def calibrate(self, initial_params: HestonParameterSet, aggressive: bool = False,
+                seed_individual: Optional[np.ndarray] = None, prior_weight: float = 0.5) -> Tuple[HestonParameterSet, ql.HestonModel]:
         """
         两阶段校准，损失函数包含：
         - 价格匹配（RMSE + 0.3*MAPE）
@@ -255,7 +244,7 @@ class HestonModelCalibrator:
             # 损失超参数
             PRIOR_WEIGHT = prior_weight
 
-            def _loss_function(params):
+            def _loss_function(params: np.ndarray) -> float:
                 """损失函数：平滑 Huber 价格误差 + 离群值软屏障 + 适度 Feller 与 L2 正则 + BS 先验"""
                 import numpy as np
                 import QuantLib as ql
@@ -519,23 +508,6 @@ def run_daily_calibration(
 
     current_initial = initial_params
 
-    # ---- 辅助过滤函数（与 setup_calibration_helpers 完全一致）----
-    def apply_filter(df):
-        """返回满足校准所用过滤条件的期权子集"""
-        df = df[df['T'] >= 0.02].copy()
-        def short_term_filter(row):
-            if row['T'] < 0.05:
-                if row.get('volume', 0) < 500 or abs(row.get('delta', 0)) > 0.65:
-                    return False
-            return True
-        df = df[df.apply(short_term_filter, axis=1)]
-        if 'delta' in df.columns:
-            df = df[(df['delta'].abs() >= 0.1) & (df['delta'].abs() <= 0.9)]
-        df = df[df['close'] > 0]
-        df = df[np.isfinite(df['close'])]
-        return df
-    # -------------------------------------------------------------
-
     for dt in date_range:
         with ql.SavedSettings():
             ql.Settings.instance().evaluationDate = ql.Date(dt.day, dt.month, dt.year)
@@ -546,7 +518,7 @@ def run_daily_calibration(
                 continue
 
             # 先过滤，得到与校准时完全相同的期权集合
-            filtered_data = apply_filter(day_data)
+            filtered_data = filter_calibration_options(day_data)
             if filtered_data.empty:
                 continue
 

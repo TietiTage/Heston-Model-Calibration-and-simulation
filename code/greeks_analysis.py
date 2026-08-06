@@ -9,11 +9,13 @@ from typing import TypedDict
 from datetime import datetime
 
 class OptionSpec(TypedDict):
+    """目标期权规格：行权价、类型与到期日。"""
     strike: int
     type: Literal["C","P"]
     expiry: datetime
     
 class GreeksRecord(TypedDict):
+    """单日希腊字母记录：五个希腊字母 + 评估日 + 标的资产价格。"""
     delta: float
     gamma: float
     theta: float
@@ -23,6 +25,7 @@ class GreeksRecord(TypedDict):
     spot: float
 
 class HestonGreeksCalculator:
+    """基于有限差分引擎（FdHestonVanillaEngine）的 Heston 希腊字母计算器。"""
     def __init__(self, params: HestonParameterSet, 
                  spot:float, 
                  risk_free_curve:ql.YieldTermStructureHandle, 
@@ -60,7 +63,7 @@ class HestonGreeksCalculator:
         ts = pd.Timestamp(value)
         return ql.Date(ts.day, ts.month, ts.year)
 
-    def _setup_engine(self):
+    def _setup_engine(self) -> None:
         """基于当前参数构建 Heston 模型并创建有限差分引擎。"""
         process = ql.HestonProcess(
             self.risk_free_curve,
@@ -78,7 +81,7 @@ class HestonGreeksCalculator:
             self.engine = ql.FdHestonVanillaEngine(
                             self.model)
 
-    def update_spot(self, new_spot) -> None:
+    def update_spot(self, new_spot: float) -> None:
         """更新标的价格。"""
         self.spot_quote.setValue(float(new_spot))
 

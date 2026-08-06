@@ -69,3 +69,24 @@
 
 - `code/` 下若干 .py 与 `main.ipynb` 仍包含用户未提交的修改（含本次 docstring 补充）。按 AGENTS.md“逻辑代码改变需先通过 pytest 再推送”的要求，本次未将这些代码改动提交；`tests/` 目录尚未建立。
 - `site/` 为 mkdocs 构建产物，已加入 .gitignore。
+
+## 2026-08-07 提交核心代码并建立 pytest 测试套件
+
+### 本次改动
+
+1. **提交五个核心 py 文件**
+   - 用户确认五个核心 py 文件（data_process / data_processor / model_calibrator / pricing_verification / greeks_analysis）可以提交。
+   - 除 docstring 与类型注解外，工作区相对上次提交还包含：`prior_v0_center` 元组括号 bug 修复（`(max(atm_iv), 0.05)**2` → `max(atm_iv, 0.05)**2`），以及校准过滤逻辑去重（`run_daily_calibration` 内嵌 `apply_filter` 替换为共享的 `filter_calibration_options`）。
+
+2. **新增 pytest 测试套件（36 个用例，全部通过）**
+   - 新增 `pytest.ini` 与 `tests/`（conftest.py + 5 个 `test_<模块名>.py`），测试数据取自 `data/`。
+   - 覆盖：合约解析与到期日（test_data_process）；数据清洗、现货/股息率/利率插值、BS 隐含波动率与统一过滤（test_data_processor）；Heston 参数集合、BS 先验、helpers 构建、单期权定价与误差计算（test_model_calibrator）；BS 公式对照 QuantLib、平价关系、Heston 半解析与 MC 一致性（test_pricing_verification）；希腊字母计算、spot 更新与动态分析（test_greeks_analysis）。
+   - 说明：完整的 `calibrate()`（DE + L-BFGS-B）计算量过大，未放入单元测试，其核心路径以组件级测试覆盖。
+   - 环境：在 data_process 虚拟环境安装 pytest 9.1.1；运行 `pytest`（或 `python -m pytest`）3.6 秒通过。
+
+3. **配套更新**
+   - `readme.md` 与 `docs/` 增加测试章节与 tests/ 目录说明。
+
+### 待办 / 说明
+
+- `code/main.ipynb` 仍保留用户未提交的修改，本次未提交。

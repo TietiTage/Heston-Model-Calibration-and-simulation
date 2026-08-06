@@ -32,6 +32,7 @@ Heston-Model-Calibration-and-simulation/
 │   ├── project_design.md     # 设计辅助文档（流程图 / ER 图）
 │   └── api/                  # API 参考（docstring 自动生成）
 ├── code/                     # 源代码
+├── tests/                    # pytest 测试用例
 ├── data/                     # 输入数据
 ├── output/                   # 校准结果输出
 ├── image/                    # 图表输出

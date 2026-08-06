@@ -273,6 +273,7 @@ io_options_processed.csv ─┐
 - py 代码必须使用类型注解（`typing`：`Optional`、`Union`、`Literal`、`TypedDict`、`dataclass`），并为函数和类编写 docstring；
 - docstring 变更后需使用 MkDocs 重新生成 API 文档；
 - 文档统一存放于 `docs/` 目录，通过 `mkdocs.yml` 组织维护。
+- 测试统一使用 pytest 框架，测试文件置于 `tests/` 目录，命名规则 `test_<模块名>.py`，测试数据取自 `data/`。
 
 ## 8. 环境与运行说明
 

@@ -25,6 +25,7 @@ simulation/
 │    └── main.ipynb               # 主运行 notebook
 ├── mkdocs.yml                    # MkDocs 配置
 ├── requirements.txt              # 运行时依赖
+├── tests/                        # pytest 测试用例（数据取自 data/）
 └── README.md
 ```
 
@@ -47,6 +48,15 @@ mkdocs build     # 静态构建到 site/
 - `docs/summary_proj.md`：项目总结（每个文件的职能、模块依赖、数据流向、算法选择与设计思想）。
 - `docs/project_design.md`：流程图、数据流图与 ER 图。
 - `docs/api/`：API 参考，由各模块 docstring 经 mkdocstrings 自动生成。
+
+## 测试
+
+测试统一使用 pytest 框架，测试文件位于 `tests/` 目录（命名规则 `test_<模块名>.py`），测试数据取自 `data/`：
+
+```bash
+pip install pytest
+pytest
+```
 
 ## 数据准备
 
