@@ -63,23 +63,23 @@
       <span class="name">项目总结（readme.md）</span>
       <div class="desc">文件职能、模块依赖、数据流向、算法选择与设计思想、数据格式、运行说明</div>
     </a>
-    <a class="card" href="docs/project_design.md">
-      <span class="name">设计文档（project_design.md）</span>
+    <a class="card" href="site/project_design.html">
+      <span class="name">设计文档（project_design.html）</span>
       <div class="desc">总体数据流、单日校准、定价验证、希腊字母分析流程图</div>
     </a>
     <a class="card" href="site/index.html">
-      <span class="name">文档首页（docs/index.md）</span>
-      <div class="desc">MkDocs 文档源文件，GitHub / 本地均可直接渲染查看</div>
+      <span class="name">MkDocs 站点（site/index.html）</span>
+      <div class="desc">完整构建的 HTML 文档站点（由 start_docs.bat / mkdocs build 生成）</div>
     </a>
   </div>
 
   <h2>API 参考（site/api/）</h2>
   <div class="grid">
-    <a class="card" href="docs/api/data_process.md"><span class="name">data_process</span><div class="desc">中金所数据汇总合并</div></a>
-    <a class="card" href="docs/api/data_processor.md"><span class="name">data_processor</span><div class="desc">数据加载、清洗与市场环境</div></a>
-    <a class="card" href="docs/api/model_calibrator.md"><span class="name">model_calibrator</span><div class="desc">Heston 参数校准</div></a>
-    <a class="card" href="docs/api/pricing_verification.md"><span class="name">pricing_verification</span><div class="desc">定价验证（半解析 / MC / BS）</div></a>
-    <a class="card" href="docs/api/greeks_analysis.md"><span class="name">greeks_analysis</span><div class="desc">希腊字母计算与动态分析</div></a>
+    <a class="card" href="site/api/data_process.html"><span class="name">data_process</span><div class="desc">中金所数据汇总合并</div></a>
+    <a class="card" href="site/api/data_processor.html"><span class="name">data_processor</span><div class="desc">数据加载、清洗与市场环境</div></a>
+    <a class="card" href="site/api/model_calibrator.html"><span class="name">model_calibrator</span><div class="desc">Heston 参数校准</div></a>
+    <a class="card" href="site/api/pricing_verification.html"><span class="name">pricing_verification</span><div class="desc">定价验证（半解析 / MC / BS）</div></a>
+    <a class="card" href="site/api/greeks_analysis.html"><span class="name">greeks_analysis</span><div class="desc">希腊字母计算与动态分析</div></a>
   </div>
 
   <h2>本地阅览说明</h2>
@@ -88,7 +88,7 @@
     <li>如 <code>site/</code> 尚不存在或内容过期，请先运行 <code>start_docs.bat</code> 或 <code>mkdocs build</code>；</li>
     <li>手工预览：<code>mkdocs serve</code> 后浏览器访问 <code>http://localhost:8000</code>；</li>
     <li><code>readme.md</code> 与 <code>docs/*.md</code> 为 Markdown 源文件，推荐用 VS Code / Typora / GitHub 渲染查看。</li>
-    <li><code>site/</code> 为本地构建产物（已 gitignore），在 GitHub 网页上请直接使用上方 <code>docs/</code> 链接。</li>
+    <li><code>site/</code> 为本地构建产物（已 gitignore），在 GitHub 上请通过 <code>readme.md</code> 查看文档源文件。</li>
   </ol>
 </div>
 </body>

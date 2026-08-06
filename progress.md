@@ -150,3 +150,16 @@
 ### 说明
 
 - `processor.pkl` 与生成 CSV 仅停止跟踪（本地文件保留），历史提交中的体积未做重写。
+
+## 2026-08-07 修复本地文档入口的导航与 API 展示问题
+
+### 本次改动
+
+1. `mkdocs.yml` 设置 `use_directory_urls: false`：构建产物由目录式页面（`api/data_process/index.html`）改为扁平 `.html`（`api/data_process.html`），侧边栏/正文链接直接指向文件，解决 `file://` 双击打开时进入目录列表、需再点一次 `index.html` 的问题。
+2. 根目录 `index.html`：导航卡片统一指向构建后的站点页面（`site/index.html`、`site/project_design.html`、`site/api/*.html`），避免浏览器直接打开 markdown 源文件（API 页只显示 `::: 模块名` 与 `members_order: source` 片段）。
+3. `docs/index.md` 增加提示：API 完整版由 MkDocs 渲染，GitHub 上打开 `docs/api/*.md` 显示 docstring 源片段。
+4. 重新执行 `mkdocs build`，验证侧边栏与 API 页链接可直接打开。
+
+### 说明
+
+- `site/` 仍为 gitignore 的本地构建产物，需通过 `start_docs.bat` 或 `mkdocs build` 生成。

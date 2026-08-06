@@ -12,6 +12,8 @@
 | [设计文档（流程图）](project_design.md) | 总体数据流、单日校准、定价验证、希腊字母分析的流程图 |
 | [API 参考](api/data_processor.md) | 类的构成、函数的输入输出与主要作用、变量的类型（由 docstring 经 MkDocs 自动生成） |
 
+> 提示：API 参考页由 MkDocs 从 docstring 渲染生成，完整版请在本机构建（`start_docs.bat` 或 `mkdocs build`）后查看；在 GitHub 上直接打开 `docs/api/*.md` 会看到 `::: 模块名` 的 mkdocstrings 源片段。
+
 ## 本地阅览
 
 - 根目录 `index.html`：统一本地入口（浏览器直接打开）；

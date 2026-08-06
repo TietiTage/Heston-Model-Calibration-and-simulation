@@ -3,6 +3,7 @@ site_description: 基于 QuantLib 的 Heston 随机波动率模型——沪深30
 repo_url: https://github.com/TietiTage/Heston-Model-Calibration-and-simulation
 
 docs_dir: docs
+use_directory_urls: false
 
 theme:
   name: readthedocs
