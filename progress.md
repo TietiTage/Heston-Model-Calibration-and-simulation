@@ -31,8 +31,9 @@
 ### 关联文件
 
 - `code/AGENTS.md`：Agent 工作偏好（用户指示，禁止修改）。
-- `docs/summary_proj.md`：项目总结文档（2026-08-07 起随 MkDocs 站点维护）。
+- `readme.md`：项目总结文档（已合并原 summary_proj.md 内容）。
 - `docs/project_design.md`：设计辅助文档（流程图）。
+- `index.html` / `start_docs.bat`：统一本地文档入口与一键打开脚本。
 - `requirements.txt`：重写后的依赖清单。
 
 ## 2026-08-07 按新版 AGENTS.md 重构文档（MkDocs 化）
@@ -106,3 +107,23 @@
 ### 说明
 
 - 设计辅助文档现仅保留四张流程图（总体数据流、单日校准、定价验证、希腊字母分析）。
+
+## 2026-08-07 合并 summary_proj 至 readme 并重构本地文档入口
+
+### 本次改动
+
+1. **合并 `summary_proj.md` 到 `readme.md`，消除冗余**
+   - 原 `docs/summary_proj.md` 的文件职能、模块依赖、数据流向、算法选择与设计思想、数据文件格式、命名规范等内容全部并入根目录 `readme.md`（并保留原有环境/运行/注意事项等章节，去重合并“核心模块说明”）。
+   - 删除 `docs/summary_proj.md`；MkDocs 导航移除“项目总结”页。
+
+2. **重构网页阅览方式，提供统一本地入口（与 readme 同级）**
+   - 新增根目录 `index.html`：统一入口页（自包含样式），汇总链接项目总结、设计文档、MkDocs 站点与 5 个 API 参考页。
+   - 新增根目录 `start_docs.bat`：一键构建 MkDocs 站点并打开入口页。
+   - `docs/index.md` 精简为 MkDocs 站点导航首页；`mkdocs.yml` 导航改为：首页 / 设计文档（流程图）/ API 参考。
+
+3. **配套更新**
+   - `docs/project_design.md`：项目整体说明指向根目录 `readme.md`。
+
+### 说明
+
+- `site/` 为 mkdocs 构建产物（已 gitignore），首次使用请先运行 `start_docs.bat` 或 `mkdocs build`。

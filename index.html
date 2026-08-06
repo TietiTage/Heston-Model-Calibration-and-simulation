@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heston 模型期权校准与模拟 — 文档入口</title>
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --card: #ffffff;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --muted: #57606a;
+    --accent: #0969da;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px; }
+  header h1 { margin: 0 0 6px; font-size: 26px; }
+  header p { margin: 0; color: var(--muted); }
+  h2 { font-size: 19px; margin: 28px 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  a.card {
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  a.card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(9, 105, 218, .15); }
+  a.card .name { font-weight: 600; color: var(--accent); }
+  a.card .desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  ol.notes { padding-left: 20px; color: var(--text); }
+  ol.notes li { margin: 6px 0; }
+  code {
+    background: #eff2f5;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Heston 模型期权校准与模拟</h1>
+    <p>统一本地文档入口 · 基于 QuantLib 的沪深300指数期权每日校准、定价验证与希腊字母分析</p>
+  </header>
+
+  <h2>文档导航</h2>
+  <div class="grid">
+    <a class="card" href="readme.md">
+      <span class="name">项目总结（readme.md）</span>
+      <div class="desc">文件职能、模块依赖、数据流向、算法选择与设计思想、数据格式、运行说明</div>
+    </a>
+    <a class="card" href="docs/project_design.md">
+      <span class="name">设计文档（project_design.md）</span>
+      <div class="desc">总体数据流、单日校准、定价验证、希腊字母分析流程图</div>
+    </a>
+    <a class="card" href="site/index.html">
+      <span class="name">MkDocs 站点（site/index.html）</span>
+      <div class="desc">完整构建的 HTML 站点，浏览器阅览体验最佳</div>
+    </a>
+  </div>
+
+  <h2>API 参考（site/api/）</h2>
+  <div class="grid">
+    <a class="card" href="site/api/data_process/index.html"><span class="name">data_process</span><div class="desc">中金所数据汇总合并</div></a>
+    <a class="card" href="site/api/data_processor/index.html"><span class="name">data_processor</span><div class="desc">数据加载、清洗与市场环境</div></a>
+    <a class="card" href="site/api/model_calibrator/index.html"><span class="name">model_calibrator</span><div class="desc">Heston 参数校准</div></a>
+    <a class="card" href="site/api/pricing_verification/index.html"><span class="name">pricing_verification</span><div class="desc">定价验证（半解析 / MC / BS）</div></a>
+    <a class="card" href="site/api/greeks_analysis/index.html"><span class="name">greeks_analysis</span><div class="desc">希腊字母计算与动态分析</div></a>
+  </div>
+
+  <h2>本地阅览说明</h2>
+  <ol class="notes">
+    <li>双击 <code>start_docs.bat</code>：一键构建 MkDocs 站点并打开本入口页；</li>
+    <li>如 <code>site/</code> 尚不存在或内容过期，请先运行 <code>start_docs.bat</code> 或 <code>mkdocs build</code>；</li>
+    <li>手工预览：<code>mkdocs serve</code> 后浏览器访问 <code>http://localhost:8000</code>；</li>
+    <li><code>readme.md</code> 与 <code>docs/*.md</code> 为 Markdown 源文件，推荐用 VS Code / Typora / GitHub 渲染查看。</li>
+  </ol>
+</div>
+</body>
+</html>

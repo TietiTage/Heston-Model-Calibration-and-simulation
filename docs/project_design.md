@@ -1,7 +1,7 @@
 # project_design.md — 设计辅助文档（流程图）
 
 > 依据 `code/AGENTS.md` 要求生成的软件工程设计辅助文档。
-> 流程图从 `summary_proj.md` 中独立出来，便于单独维护；项目整体说明见 `summary_proj.md`。
+> 流程图从 `readme.md` 中独立出来，便于单独维护；项目整体说明见根目录 `readme.md`。
 
 ## 1. 流程图
 
