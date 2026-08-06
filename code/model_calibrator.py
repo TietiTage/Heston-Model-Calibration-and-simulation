@@ -40,15 +40,27 @@ class HestonModelCalibrator:
                  risk_free_curve: ql.YieldTermStructureHandle, 
                  dividend_curve:ql.YieldTermStructureHandle) -> None:
         """
-        params:
-        self.eval_date = eval_date : 评估日
-        self.option_data = option_data 当日期权数据df
-        self.spot = float(spot) 标的资产价格（点）
-        self.risk_free_curve = risk_free_curve 无风险利率曲线（连续复利）
-        self.dividend_curve = dividend_curve 股息率曲线
-        self.helpers:List[OptionHelper] = [] 根据option_data使用ql创建的当日所有可用期权列表
-        self.model = None 校准所用数学模型
-        self.engine = None 校准数学模型使用的引擎
+        Parameters
+        ----------
+        eval_date : Union[ql.Date, str, pd.Timestamp]
+            评估日。
+        option_data : pd.DataFrame
+            当日期权数据 DataFrame。
+        spot : float
+            标的资产价格（点）。
+        risk_free_curve : ql.YieldTermStructureHandle
+            无风险利率曲线（连续复利）。
+        dividend_curve : ql.YieldTermStructureHandle
+            股息率曲线。
+
+        Attributes
+        ----------
+        helpers : List[OptionHelper]
+            根据 option_data 使用 ql 创建的当日所有可用期权列表。
+        model : Optional[ql.HestonModel]
+            校准所用数学模型。
+        engine : Optional[ql.AnalyticHestonEngine]
+            校准数学模型使用的引擎。
         """
         self.eval_date = eval_date
         self.option_data: pd.DataFrame = option_data
@@ -496,11 +508,25 @@ def run_daily_calibration(
     calibration_options_csv: Optional[str] = 'calibration_options.csv'
 ) -> pd.DataFrame:
     """
-    高层函数：遍历日期范围，每天校准并返回参数DataFrame
-    processor: HestonDataProcessor实例，已经调用过 load_and_clean_data
-    start_date, end_date: datetime 对象
-    initial_params: HestonParameterSet 初始参数
-    calibration_options_csv: 保存每日校准所用期权数据的CSV路径（若为None则不保存）
+    高层函数：遍历日期范围，每天校准并返回参数 DataFrame。
+
+    Parameters
+    ----------
+    processor : HestonDataProcessor
+        HestonDataProcessor 实例，已经调用过 load_and_clean_data。
+    start_date : Union[str, pd.Timestamp, datetime]
+        起始日期。
+    end_date : Union[str, pd.Timestamp, datetime]
+        结束日期。
+    initial_params : HestonParameterSet
+        初始参数。
+    calibration_options_csv : Optional[str]
+        保存每日校准所用期权数据的 CSV 路径（若为 None 则不保存）。
+
+    Returns
+    -------
+    pd.DataFrame
+        每天校准得到的参数 DataFrame。
     """
     results = []
     all_filtered = []  # 用来存所有日期的过滤后期权数据

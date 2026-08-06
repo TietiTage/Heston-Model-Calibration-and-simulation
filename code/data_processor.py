@@ -41,7 +41,7 @@ class HestonDataProcessor:
                  dividend_csv_path: str,
                  rate_df: pd.DataFrame) -> None:
         """
-        参数
+        Parameters
         ----------
         option_csv_path : str
             期权交易数据 CSV 文件路径

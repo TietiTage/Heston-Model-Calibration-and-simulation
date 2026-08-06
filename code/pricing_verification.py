@@ -242,7 +242,7 @@ def compare_pricing_on_date(eval_date: Union[str, pd.Timestamp, datetime],
     """
     对指定评估日进行多模型定价验证。
 
-    参数
+    Parameters
     ----------
     eval_date : Union[str, pd.Timestamp, datetime]
         评估日。
@@ -253,7 +253,7 @@ def compare_pricing_on_date(eval_date: Union[str, pd.Timestamp, datetime],
     calibration_csv : str
         校准期权 CSV 路径（保留参数，用于样本一致性说明）。
 
-    返回
+    Returns
     ----------
     Optional[pd.DataFrame]
         列 = strike, type, T, market, BlackScholes, BS_const, Heston_analytic, Heston_MC；

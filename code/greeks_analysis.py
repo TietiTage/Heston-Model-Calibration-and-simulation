@@ -32,7 +32,7 @@ class HestonGreeksCalculator:
                  dividend_curve:ql.YieldTermStructureHandle, 
                  eval_date: Union[str, ql.Date, pd.Timestamp, datetime]) -> None:
         """
-        参数
+        Parameters
         ----------
         params : HestonParameterSet
             校准后的 Heston 参数。
@@ -42,7 +42,7 @@ class HestonGreeksCalculator:
             无风险利率曲线。
         dividend_curve : ql.YieldTermStructureHandle
             股息率曲线。
-        eval_date : 可转换为 ql.Date 时间字符串
+        eval_date : Union[str, ql.Date, pd.Timestamp, datetime]
             评估日期。
         """
         self.params = params
@@ -241,13 +241,23 @@ def analyze_greeks_dynamics(processor:HestonDataProcessor,
                             eval_dates:List[Union[str, pd.Timestamp, datetime]]
                             ) -> pd.DataFrame:
     """
-    参数:
-        processor: HestonDataProcessor实例
-        params_df: run_daily_calibration返回的DataFrame，包含每天校准的参数
-        target_option_spec: dict，如 {'strike': 3900, 'type': 'C', 'expiry': datetime(2025,6,20)}
-        eval_dates: 要分析的日期列表（datetime）
-    返回:
-        greeks_df: DataFrame，每天对应的希腊字母值
+    分析多个评估日的希腊字母动态。
+
+    Parameters
+    ----------
+    processor : HestonDataProcessor
+        HestonDataProcessor 实例。
+    params_df : pd.DataFrame
+        run_daily_calibration 返回的 DataFrame，包含每天校准的参数。
+    target_option_spec : OptionSpec
+        目标期权规格字典，如 {'strike': 3900, 'type': 'C', 'expiry': datetime(2025, 6, 20)}。
+    eval_dates : List[Union[str, pd.Timestamp, datetime]]
+        要分析的日期列表。
+
+    Returns
+    -------
+    pd.DataFrame
+        每天对应的希腊字母值。
     """
     greeks_list = []
 
